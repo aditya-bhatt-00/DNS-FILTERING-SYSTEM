@@ -1,5 +1,6 @@
 # DNS-FILTERING-SYSTEM
-"Your DNS logs have secrets. We force them to confess." This isn’t just machine learning—it’s cyber interrogation. Upload your traffic, and our models (Random Forest? Nah. XGBoost + Stacking? Yes.) reveal what’s hiding: phishing, spam, or pure malware. With graphs that even your grandma would understand.
+We made that possible—thanks to powerful ML models, real-time visualizations, and a clean UI. Trained on CIC-BELL-DNS-2021, our tool goes beyond theory and lands straight into action. 93% accuracy, zero guesswork.
+
 # DNS Malware Detection using Ensemble Learning
 
 A smart cybersecurity solution to detect **malicious network traffic** using **ML-powered classification** on the CIC-BELL-DNS-2021 dataset. Our model analyzes DNS records to classify traffic into **Benign, Malware, Phishing, or Spam**, and presents real-time predictions with an interactive UI and dynamic visualizations.
