@@ -20,6 +20,8 @@ With cyber threats becoming increasingly sophisticated, DNS remains a vulnerable
 - Files: `benign.csv`, `malware.csv`, `phishing.csv`, `spam.csv`
 
 These were merged into a unified dataset with labeled entries for ML processing.
+![image](https://github.com/user-attachments/assets/86c55a27-5ebb-4bf2-b881-9a2a94843939)
+
 
 ---
 
@@ -29,6 +31,7 @@ These were merged into a unified dataset with labeled entries for ML processing.
 - Dropped irrelevant columns
 - Applied Label Encoding on target variable
 - **Train-Test Split**: 80% Training | 20% Testing
+- ![image](https://github.com/user-attachments/assets/05c37874-8005-4163-ad68-c29af75d1b8b)
 
 ---
 
@@ -40,6 +43,14 @@ These were merged into a unified dataset with labeled entries for ML processing.
 | XGBoost              | Boosted tree classifier                       | **93% (0.93)** |
 | MLP + SMOTE          | Applied SMOTE oversampling                    | 15% (0.15) |
 | Stacking Classifier  | Ensemble of top-performing models             | **93% (0.93)** |
+
+![image](https://github.com/user-attachments/assets/a58e4f51-b7cd-4b93-a11e-e9534cc768c8)
+![image](https://github.com/user-attachments/assets/c98e69c7-3c42-4f22-80ae-c85dbde7905f)
+![image](https://github.com/user-attachments/assets/61c92caf-e869-495e-a99d-5289d49a9edf)
+![image](https://github.com/user-attachments/assets/09a897a0-2599-4c2e-9199-7830861918c7)
+![image](https://github.com/user-attachments/assets/beecdd0b-e428-42dd-a611-c1b6ac2ba7c0)
+![image](https://github.com/user-attachments/assets/1dedbc88-cac7-4307-8ac6-7f28e0d6fb73)
+![image](https://github.com/user-attachments/assets/6e455531-948d-4a16-9f75-3a628c89cd69)
 
 After experimenting with several models and balancing techniques, **XGBoost** and **Stacking** emerged as top performers.
 
