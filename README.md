@@ -28,8 +28,14 @@ These were merged into a unified dataset with labeled entries for ML processing.
 ## ⚙️ Data Preprocessing
 
 - Combined all four CSVs into a single DataFrame
+- ![image](https://github.com/user-attachments/assets/233a1e77-b632-4eb0-b71d-48b5939c0305)
+
 - Dropped irrelevant columns
+- ![image](https://github.com/user-attachments/assets/2f99b5b7-6cdf-4d73-b9a3-70673d3f4ce3)
+
 - Applied Label Encoding on target variable
+- ![image](https://github.com/user-attachments/assets/39be11ca-3bcd-49d0-9fdb-5d69728aae9f)
+
 - **Train-Test Split**: 80% Training | 20% Testing
 - ![image](https://github.com/user-attachments/assets/05c37874-8005-4163-ad68-c29af75d1b8b)
 
