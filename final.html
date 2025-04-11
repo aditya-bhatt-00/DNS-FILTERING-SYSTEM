@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LoopVerse - DNS Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.12.313/pdf.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+</head>
+<body class="font-sans min-h-screen bg-gradient-to-br from-slate-50 via-white">
+
+
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gray-900 text-white flex flex-col justify-between">
+      <div>
+        <div class="px-6 py-4 text-xl font-bold tracking-wide border-b border-gray-700">🔄 LoopVerse</div>
+        <nav class="p-4">
+          <ul class="space-y-4">
+            <li><a href="#" onclick="backToDashboard()" class="flex items-center text-green-400 font-semibold">🏠 Dashboard</a></li>
+            <li>
+              <button onclick="toggleChartMenu()" class="flex items-center w-full hover:text-green-400">
+                📊 Chart 
+                <span class="ml-auto bg-green-500 text-xs px-2 py-0.5 rounded-full">9</span>
+              </button>
+              <ul id="chartSubMenu" class="ml-4 mt-2 space-y-2 hidden text-sm">
+                <li><a href="#" onclick="showChartType('bar')">Bar Chart</a></li>
+                <li><a href="#" onclick="showChartType('scatter')">Scatter Plot</a></li>
+                <li><a href="#" onclick="showChartType('pie')">Pie Chart</a></li>
+                <li><a href="#" onclick="showChartType('line')">Line Chart</a></li>
+                <li><a href="#" onclick="showChartType('bubble')">Bubble Chart</a></li>
+                <li><a href="#" onclick="showChartType('histogram')">Histogram</a></li>
+                <li><a href="#" onclick="showChartType('area')">Area Chart</a></li>
+              
+              </ul>
+            </li>
+            <li><a href="#" onclick="showRegistration()" class="flex items-center hover:text-green-400">📧 Email</a></li>
+            <li><a href="#" onclick="showProfile()" class="flex items-center hover:text-green-400">👤 Profile</a></li>
+            <li><a href="#" class="flex items-center hover:text-green-400">⚙️ Setting</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="p-4 border-t border-gray-700">
+        <a href="#" class="block text-sm text-gray-400 hover:text-red-400">🚪 Sign Out</a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6 overflow-y-auto">
+      <!-- Header -->
+      <div class="mb-6 flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-gray-800">Dashboard</h1>
+        <input type="search" placeholder="Search..." class="border border-gray-300 rounded-lg px-4 py-2" />
+      </div>
+
+      <!-- Upload Section -->
+      <div class="bg-white p-6 rounded-lg shadow mb-6">
+        <h2 class="text-xl font-semibold mb-2">📁 Upload DNS Logs</h2>
+        <p class="text-sm text-gray-600 mb-4">Supported formats: CSV, Excel, PDF</p>
+        <input type="file" id="fileInput" class="mb-4" accept=".csv,.xlsx,.pdf" />
+        <button onclick="handleFile()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          Upload & Generate Graph
+        </button>
+      </div>
+
+      <!-- Single Row Metrics -->
+      <div class="shadow-xl rounded-2xl p-6 bg-green-100 hover:shadow-2xl transition-all duration-300">
+
+      
+      <!-- Safe Request Card -->
+<div class="shadow rounded-xl p-4 bg-green-100">
+    <h3 class="text-sm text-green-800">Safe Requests</h3>
+    <p id="safeRequests" class="text-3xl font-bold text-green-800">0</p>
+  </div>
+  
+  <!-- Malicious Request Card -->
+  <div class="shadow rounded-xl p-4 bg-red-100">
+    <h3 class="text-sm text-red-800">Malicious Requests</h3>
+    <p id="maliciousRequests" class="text-3xl font-bold text-red-800">0</p>
+  </div>
+  
+  <!-- Spam Request Card -->
+  <div class="shadow rounded-xl p-4 bg-yellow-100">
+    <h3 class="text-sm text-yellow-800">Spam Requests</h3>
+    <p id="spamRequests" class="text-3xl font-bold text-yellow-800">0</p>
+  </div>
+  
+  <!-- Total Request Card -->
+  <div class="shadow rounded-xl p-4 bg-blue-100">
+    <h3 class="text-sm text-blue-800">Total Requests</h3>
+    <p id="totalRequests" class="text-3xl font-bold text-blue-800">0</p>
+  </div>
+  
+
+      <!-- Dual Charts -->
+      <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
+        <!-- Static Pie Chart -->
+        <div class="bg-white shadow rounded-xl p-6">
+          <h3 class="text-lg font-semibold mb-2 text-center">Overall Distribution</h3>
+          <canvas id="donutChart"></canvas>
+        </div>
+
+        <!-- Dynamic Chart -->
+        <div class="bg-white shadow rounded-xl p-6">
+          <h3 class="text-lg font-semibold mb-2 text-center">Selected Chart View</h3>
+          <canvas id="dnsChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="bg-white p-6 rounded-xl shadow">
+        <h3 class="text-lg font-semibold mb-2">Summary</h3>
+        <p id="chartSummary" class="text-sm text-gray-600 italic">Upload a file to generate report.</p>
+      </div>
+    </main>
+
+  </div>
+
+  <div id="dnsListSection">
+    <h3>🔍 DNS Predictions:</h3>
+    <table id="dnsTable">
+      <thead>
+        <tr>
+          <th>DNS Entry</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  
+  <!-- Registration Page -->
+  <div id="registrationPage" class="hidden">
+    <div class="bg-white p-6 rounded-lg shadow max-w-md mx-auto">
+      <h2 class="text-2xl font-bold mb-4 text-center text-gray-800">📧 Register Email</h2>
+      <form class="space-y-4" onsubmit="saveProfileData(event)">
+        <div>
+          <label class="block text-gray-700">Name</label>
+          <input type="text" id="regName" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Your name" required />
+        </div>
+        <div>
+          <label class="block text-gray-700">Email</label>
+          <input type="email" id="regEmail" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="you@example.com" required />
+        </div>
+        <div>
+          <label class="block text-gray-700">Password</label>
+          <input type="password" id="regPassword" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="••••••••" required />
+        </div>
+        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 w-full">Register</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Profile Page -->
+  <div id="profilePage" class="hidden">
+    <div class="bg-white p-6 rounded-lg shadow max-w-md mx-auto mt-6">
+      <h2 class="text-2xl font-bold mb-4 text-center text-gray-800">👤 Your Profile</h2>
+      <p class="text-gray-600"><strong>Name:</strong> <span id="profileName">-</span></p>
+      <p class="text-gray-600"><strong>Email:</strong> <span id="profileEmail">-</span></p>
+      <p class="text-gray-600"><strong>Password:</strong> <span id="profilePassword">••••••••</span></p>
+    </div>
+  </div>
+
+  <script>
+    let dnsChart, donutChart;
+    let chartData = { labels: [], safeData: [], maliciousData: [], spamData: [] };
+
+    function toggleChartMenu() {
+      document.getElementById('chartSubMenu').classList.toggle('hidden');
+    }
+
+    function populateDNSTable(data) {
+  const tableBody = document.getElementById("dnsTable").querySelector("tbody");
+  tableBody.innerHTML = ""; // Clear previous
+
+  data.forEach((row) => {
+    const tr = document.createElement("tr");
+
+    const dnsCell = document.createElement("td");
+    dnsCell.textContent = row.DNS || row.Domain || "Unknown";
+
+    const statusCell = document.createElement("td");
+    statusCell.textContent = row.Prediction;
+
+    // Highlight if threat
+    if (row.Prediction === "Malicious" || row.Prediction === "Spam") {
+      tr.style.backgroundColor = "#fee2e2"; // light red
+      tr.style.color = "#b91c1c";
+      tr.style.fontWeight = "bold";
+    }
+
+    tr.appendChild(dnsCell);
+    tr.appendChild(statusCell);
+    tableBody.appendChild(tr);
+  });
+}
+
+
+    function backToDashboard() {
+      document.getElementById('dashboardPage')?.classList.remove('hidden');
+      document.getElementById('registrationPage')?.classList.add('hidden');
+      document.getElementById('profilePage')?.classList.add('hidden');
+    }
+
+    function showRegistration() {
+      document.getElementById('dashboardPage')?.classList.add('hidden');
+      document.getElementById('registrationPage').classList.remove('hidden');
+      document.getElementById('profilePage')?.classList.add('hidden');
+    }
+
+    function showProfile() {
+      document.getElementById('dashboardPage')?.classList.add('hidden');
+      document.getElementById('registrationPage')?.classList.add('hidden');
+      document.getElementById('profilePage').classList.remove('hidden');
+
+      document.getElementById('profileName').textContent = localStorage.getItem('profileName') || '-';
+      document.getElementById('profileEmail').textContent = localStorage.getItem('profileEmail') || '-';
+    }
+
+    function saveProfileData(e) {
+      e.preventDefault();
+      localStorage.setItem('profileName', document.getElementById('regName').value);
+      localStorage.setItem('profileEmail', document.getElementById('regEmail').value);
+      localStorage.setItem('profilePassword', document.getElementById('regPassword').value);
+      showProfile();
+    }
+
+    populateDNSTable(result.data);
+
+
+    function updateDashboard(safe, malicious, spam) {
+  const total = safe + malicious + spam;
+  document.getElementById('totalRequests').textContent = total;
+  document.getElementById('safeRequests').textContent = safe;
+  document.getElementById('maliciousRequests').textContent = malicious;
+  document.getElementById('spamRequests').textContent = spam;
+
+  let threatDetected = malicious > 0 || spam > 0;
+  let threatMsg = threatDetected
+    ? "⚠️ Threat detected in DNS! Malicious or Spam records found."
+    : "✅ DNS appears to be safe.";
+
+  document.getElementById('chartSummary').textContent =
+    `${threatMsg} Summary: ${safe} Safe, ${malicious} Malicious, and ${spam} Spam requests analyzed.`;
+}
+
+
+    function renderPieChart() {
+      const ctx = document.getElementById('donutChart').getContext('2d');
+      if (donutChart) donutChart.destroy();
+
+      const totalSafe = chartData.safeData.reduce((a, b) => a + b, 0);
+      const totalMalicious = chartData.maliciousData.reduce((a, b) => a + b, 0);
+      const totalSpam = chartData.spamData.reduce((a, b) => a + b, 0);
+
+      donutChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: ['Safe', 'Malicious', 'Spam'],
+          datasets: [{
+            data: [totalSafe, totalMalicious, totalSpam],
+            backgroundColor: ['green', 'red', 'orange']
+          }]
+        }
+      });
+    }
+    async function handleFile() {
+      const file = document.getElementById('fileInput').files[0];
+      if (!file) return alert("Please select a file");
+
+      const reader = new FileReader();
+      const ext = file.name.split('.').pop().toLowerCase();
+
+      if (ext === 'csv') {
+        reader.onload = (e) => {
+          const rows = e.target.result.split('\n').map(row => row.split(','));
+          processData(rows);
+        };
+        reader.readAsText(file);
+      } else if (ext === 'xlsx') {
+        reader.onload = (e) => {
+          const workbook = XLSX.read(e.target.result, { type: 'binary' });
+          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+          const rows = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+          processData(rows);
+        };
+        reader.readAsBinaryString(file);
+      } else if (ext === 'pdf') {
+        const fileReader = new FileReader();
+        fileReader.onload = async function () {
+          const typedArray = new Uint8Array(this.result);
+          const pdf = await pdfjsLib.getDocument(typedArray).promise;
+          let fullText = "";
+
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const content = await page.getTextContent();
+            const text = content.items.map(item => item.str).join(" ");
+            fullText += text + " ";
+          }
+
+          const safeCount = (fullText.match(/Safe/gi) || []).length;
+          const maliciousCount = (fullText.match(/Malicious/gi) || []).length;
+          const spamCount = (fullText.match(/Spam/gi) || []).length;
+
+          chartData = {
+            labels: ['PDF Summary'],
+            safeData: [safeCount],
+            maliciousData: [maliciousCount],
+            spamData: [spamCount]
+          };
+
+          updateDashboard(safeCount, maliciousCount, spamCount);
+          renderPieChart();
+          showChartType('line');
+        };
+        fileReader.readAsArrayBuffer(file);
+      }
+    }
+
+    function processData(rows) {
+      let safe = 0, malicious = 0, spam = 0;
+      const dailyData = {};
+
+      for (let i = 1; i < rows.length; i++) {
+        const rowText = rows[i].join(',');
+        const dateKey = `Day ${Math.floor(i / 50) + 1}`;
+        if (!dailyData[dateKey]) dailyData[dateKey] = { Safe: 0, Malicious: 0, Spam: 0 };
+
+        if (/Safe/i.test(rowText)) { safe++; dailyData[dateKey].Safe++; }
+        else if (/Malicious/i.test(rowText)) { malicious++; dailyData[dateKey].Malicious++; }
+        else if (/Spam/i.test(rowText)) { spam++; dailyData[dateKey].Spam++; }
+      }
+
+      chartData.labels = Object.keys(dailyData);
+      chartData.safeData = chartData.labels.map(day => dailyData[day].Safe);
+      chartData.maliciousData = chartData.labels.map(day => dailyData[day].Malicious);
+      chartData.spamData = chartData.labels.map(day => dailyData[day].Spam);
+
+      updateDashboard(safe, malicious, spam);
+      renderPieChart();
+      showChartType("line");
+    }
+
+    function showChartType(type) {
+      if (dnsChart) dnsChart.destroy();
+      const ctx = document.getElementById('dnsChart').getContext('2d');
+      let config;
+      const labels = chartData.labels;
+      const colors = { Safe: 'green', Malicious: 'red', Spam: 'orange' };
+
+      switch (type) {
+        case 'bar':
+        case 'histogram':
+          config = {
+            type: 'bar',
+            data: {
+              labels,
+              datasets: [
+                { label: 'Safe', data: chartData.safeData, backgroundColor: colors.Safe },
+                { label: 'Malicious', data: chartData.maliciousData, backgroundColor: colors.Malicious },
+                { label: 'Spam', data: chartData.spamData, backgroundColor: colors.Spam }
+              ]
+            }
+          };
+          break;
+
+        case 'line':
+          config = {
+            type: 'line',
+            data: {
+              labels,
+              datasets: [
+                { label: 'Safe', data: chartData.safeData, borderColor: colors.Safe, fill: false },
+                { label: 'Malicious', data: chartData.maliciousData, borderColor: colors.Malicious, fill: false },
+                { label: 'Spam', data: chartData.spamData, borderColor: colors.Spam, fill: false }
+              ]
+            }
+          };
+          break;
+
+        case 'area':
+          config = {
+            type: 'line',
+            data: {
+              labels,
+              datasets: [
+                { label: 'Safe', data: chartData.safeData, borderColor: colors.Safe, backgroundColor: 'rgba(0,128,0,0.2)', fill: true },
+                { label: 'Malicious', data: chartData.maliciousData, borderColor: colors.Malicious, backgroundColor: 'rgba(255,0,0,0.2)', fill: true },
+                { label: 'Spam', data: chartData.spamData, borderColor: colors.Spam, backgroundColor: 'rgba(255,165,0,0.2)', fill: true }
+              ]
+            }
+          };
+          break;
+
+        case 'pie':
+          config = {
+            type: 'pie',
+            data: {
+              labels: ['Safe', 'Malicious', 'Spam'],
+              datasets: [{
+                data: [
+                  chartData.safeData.reduce((a, b) => a + b, 0),
+                  chartData.maliciousData.reduce((a, b) => a + b, 0),
+                  chartData.spamData.reduce((a, b) => a + b, 0)
+                ],
+                backgroundColor: [colors.Safe, colors.Malicious, colors.Spam]
+              }]
+            }
+          };
+          break;
+
+        case 'scatter':
+          config = {
+            type: 'scatter',
+            data: {
+              datasets: [
+                { label: 'Safe', data: chartData.safeData.map((y, i) => ({ x: i, y })), backgroundColor: colors.Safe },
+                { label: 'Malicious', data: chartData.maliciousData.map((y, i) => ({ x: i, y })), backgroundColor: colors.Malicious },
+                { label: 'Spam', data: chartData.spamData.map((y, i) => ({ x: i, y })), backgroundColor: colors.Spam }
+              ]
+            }
+          };
+          break;
+
+        case 'bubble':
+          config = {
+            type: 'bubble',
+            data: {
+              datasets: labels.map((label, i) => ({
+                label,
+                data: [{
+                  x: chartData.safeData[i] || 0,
+                  y: chartData.maliciousData[i] || 0,
+                  r: (chartData.spamData[i] || 1) + 4
+                }],
+                backgroundColor: `hsl(${i * 30}, 70%, 60%)`
+              }))
+            }
+          };
+          break;
+
+        case 'treemap':
+        case 'boxplot':
+          alert(`${type} chart type requires external plugins not included.`);
+          return;
+      }
+
+      dnsChart = new Chart(ctx, config);
+    }
+    result.data = [
+  { DNS: "malicioussite.com", Prediction: "Malicious" },
+  { DNS: "safesite.com", Prediction: "Safe" },
+  
+      ]
+
+  </script>
+</body>
+</html>
