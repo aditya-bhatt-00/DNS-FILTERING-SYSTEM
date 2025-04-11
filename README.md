@@ -1,4 +1,4 @@
-# DNS-FILTERING-SYSTEM
+![WhatsApp Image 2025-04-11 at 09 14 51_47f8c79a](https://github.com/user-attachments/assets/69d45756-e36b-4a64-9419-7bcd113c8c06)# DNS-FILTERING-SYSTEM
 We made that possible—thanks to powerful ML models, real-time visualizations, and a clean UI. Trained on CIC-BELL-DNS-2021, our tool goes beyond theory and lands straight into action. 93% accuracy, zero guesswork.
 
 # DNS Malware Detection using Ensemble Learning
@@ -64,6 +64,7 @@ After experimenting with several models and balancing techniques, **XGBoost** an
 - Outputs include:
   - Threat category (Malware, Phishing, etc.)
   - Real-time visualizations (Pie Chart, Bar Graphs, etc.)
+![WhatsApp Image 2025-04-11 at 09 14 51_085bed39](https://github.com/user-attachments/assets/4fafca6e-4144-4721-9606-5934a8abba0c)
 
 ---
 
@@ -73,6 +74,10 @@ We’ve integrated powerful visualization tools to:
 - Show category-wise distribution
 - Represent prediction probabilities
 - Detect anomalies instantly
+- 
+![WhatsApp Image 2025-04-11 at 09 14 51_47f8c79a](https://github.com/user-attachments/assets/6f1529e0-64c1-47b6-b714-322298fe0439)
+![WhatsApp Image 2025-04-11 at 09 14 51_a2210107](https://github.com/user-attachments/assets/f8448ee8-1c21-4283-8f74-c67fb19f25c4)
+![WhatsApp Image 2025-04-11 at 09 14 51_17eda138](https://github.com/user-attachments/assets/5a366a9a-c34c-44bd-abd8-0f01f10e1698)
 
 ---
 
